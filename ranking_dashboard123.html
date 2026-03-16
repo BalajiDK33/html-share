@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Variant Ranking · Non-TN · Mar 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0b0f;
+  --surface: #111318;
+  --surface2: #181b24;
+  --border: #1f2330;
+  --text: #dde2f0;
+  --sub: #7b82a0;
+  --accent: #6c7bff;
+
+  --green: #22d46c;
+  --green-dim: rgba(34,212,108,0.1);
+  --green-border: rgba(34,212,108,0.2);
+  --red: #ff4466;
+  --red-dim: rgba(255,68,102,0.1);
+  --red-border: rgba(255,68,102,0.2);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.1);
+  --teal: #2dd4bf;
+
+  --gold: #f5c842;
+  --silver: #a8b2c8;
+  --bronze: #c47a3b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.top-bar {
+  padding: 28px 40px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.sub-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--sub);
+  margin-top: 4px;
+}
+.score-formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--sub);
+  text-align: right;
+  line-height: 1.8;
+}
+.score-formula span { color: var(--text); }
+
+/* ── FILTERS ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 14px 40px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.filter-label {
+  font-size: 11px;
+  color: var(--sub);
+  margin-right: 4px;
+  font-family: 'DM Mono', monospace;
+}
+.pill-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--sub);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pill-btn:hover { border-color: var(--accent); color: var(--text); }
+.pill-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── MAIN ── */
+.layout { display: grid; grid-template-columns: 1fr 300px; gap: 0; min-height: calc(100vh - 130px); }
+
+/* ── RANKING LIST ── */
+.rank-list {
+  padding: 24px 40px;
+  border-right: 1px solid var(--border);
+}
+.zone-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+.zone-header:first-child { margin-top: 0; }
+.zone-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+.zone-label.pos { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+.zone-label.neg { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+.zone-divider { flex: 1; height: 1px; background: var(--border); }
+
+/* ── RANK ROW ── */
+.rank-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 90px 220px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.rank-row:hover { background: var(--surface); border-color: var(--border); }
+.rank-row.selected { background: var(--surface2); border-color: var(--accent); }
+
+/* rank number */
+.rank-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rank-1 { background: rgba(245,200,66,0.15); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); font-size: 14px; }
+.rank-2 { background: rgba(168,178,200,0.12); color: var(--silver); border: 1px solid rgba(168,178,200,0.25); }
+.rank-3 { background: rgba(196,122,59,0.12); color: var(--bronze); border: 1px solid rgba(196,122,59,0.25); }
+.rank-pos { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+.rank-neg { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+
+/* variant info */
+.v-info { min-width: 0; }
+.v-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--sub); margin-top: 2px; }
+.cohort-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-weight: 500;
+}
+.cohort-all  { background: rgba(108,123,255,0.12); color: var(--accent); }
+.cohort-hm   { background: rgba(45,212,191,0.1); color: var(--teal); }
+.cohort-hi   { background: rgba(245,166,35,0.12); color: var(--amber); }
+
+/* score col */
+.score-col { text-align: right; }
+.score-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+}
+.score-pos { color: var(--green); }
+.score-neg { color: var(--red); }
+.score-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+.score-bar { height: 4px; border-radius: 2px; transition: width 0.6s ease; }
+
+/* metric mini cells */
+.mini-metrics { display: flex; gap: 5px; justify-content: flex-end; }
+.mini-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 7px;
+  border-radius: 5px;
+  min-width: 64px;
+}
+.mini-label { font-family: 'DM Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.6; }
+.mini-delta { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
+.mini-conf  { font-size: 9px; opacity: 0.55; }
+.mc-green  { background: var(--green-dim); }
+.mc-red    { background: var(--red-dim); }
+.mc-noise  { background: rgba(55,65,81,0.3); }
+.mc-green .mini-delta { color: var(--green); }
+.mc-red    .mini-delta { color: var(--red); }
+.mc-noise  .mini-delta { color: var(--sub); }
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  padding: 24px 24px;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+.panel-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sub);
+  margin-bottom: 16px;
+}
+.panel-empty {
+  color: var(--sub);
+  font-size: 12px;
+  text-align: center;
+  padding: 40px 0;
+  line-height: 1.8;
+}
+.detail-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.detail-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--sub);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.detail-score-box {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.ds-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.ds-label { font-size: 11px; color: var(--sub); }
+.ds-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
+
+.metric-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.md-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.md-title { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--sub); text-transform: uppercase; }
+.md-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.md-badge.ship   { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+.md-badge.kill   { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+.md-badge.dir-up { background: rgba(34,212,108,0.06); color: #5ecca3; border: 1px solid rgba(94,204,163,0.2); }
+.md-badge.dir-dn { background: rgba(245,166,35,0.08); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+.md-badge.noise  { background: rgba(123,130,160,0.1); color: var(--sub); border: 1px solid rgba(123,130,160,0.15); }
+.md-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.md-num-box { background: var(--surface2); border-radius: 5px; padding: 7px 10px; }
+.md-num-box .n-label { font-size: 9px; color: var(--sub); margin-bottom: 2px; }
+.md-num-box .n-val { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; }
+.md-conf-bar { margin-top: 8px; }
+.md-conf-label { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 10px; color: var(--sub); }
+.md-conf-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.md-conf-fill { height: 5px; border-radius: 3px; transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+
+.verdict-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--sub);
+  line-height: 1.7;
+  border-left: 3px solid var(--accent);
+}
+.verdict-box b { color: var(--text); }
+
+/* animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.rank-row { animation: fadeIn 0.35s ease both; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1>Variant Performance <em>Ranking</em></h1>
+    <div class="sub-title">Non-TN cohort · 16 variants · Jan 30 – Mar 9, 2026 · Click a row for detail</div>
+  </div>
+  <div class="score-formula">
+    Score = Σ (metric_delta × confidence) × weight<br/>
+    Weights: <span>2nd Pay 40%</span> · <span>Cancel 35%</span> · <span>D1 Retention 25%</span><br/>
+    Higher = better · Cancel delta is inverted (lower is better)
+  </div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">COHORT:</span>
+  <button class="pill-btn active" onclick="filter('all')">All</button>
+  <button class="pill-btn" onclick="filter('All')">All cohorts</button>
+  <button class="pill-btn" onclick="filter('Homemaker')">Homemaker</button>
+  <button class="pill-btn" onclick="filter('Hindi')">Hindi</button>
+</div>
+
+<div class="layout">
+  <div class="rank-list" id="rankList"></div>
+  <div class="side-panel" id="sidePanel">
+    <div class="panel-title">Detail View</div>
+    <div class="panel-empty">← Click any variant<br/>to see breakdown</div>
+  </div>
+</div>
+
+<script>
+const MAX_SCORE = 2.02; // absolute range for bar
+
+const DATA = [
+  { rank:1,  exp:"course_v2/all",          cohort:"All",       name:"SRS GC Short+BreakUI",      fullName:"SRS GC short+breakUI",                                          control:"SRS Grammar w/Can-dos", score:0.6681,
+    cancel:{var:29.64,ctrl:30.00,conf:40.23,days:25}, second_pay:{var:32.94,ctrl:31.35,conf:96.06,days:23}, d1_ret:{var:40.28,ctrl:40.12,conf:16.12,days:23} },
+  { rank:2,  exp:"course_v2/all",          cohort:"All",       name:"SRS Grammar w/Can-dos",     fullName:"SRS Grammar with Can-dos",                                      control:"default",               score:0.6425,
+    cancel:{var:30.24,ctrl:31.23,conf:85.96,days:46}, second_pay:{var:30.47,ctrl:30.54,conf:8.01,days:43},  d1_ret:{var:40.30,ctrl:38.85,conf:95.69,days:44} },
+  { rank:3,  exp:"course_v2/A1",           cohort:"All",       name:"SRT V2 + Pre/Post",         fullName:"Spaced Repetition V2 – New Backend w/ Pre & Post Test",         control:"restructured",          score:0.6216,
+    cancel:{var:27.69,ctrl:28.60,conf:75.25,days:46}, second_pay:{var:35.13,ctrl:34.04,conf:79.94,days:44}, d1_ret:{var:43.16,ctrl:42.77,conf:34.22,days:44} },
+  { rank:4,  exp:"course_v2/hi/A2",        cohort:"Hindi",     name:"SRT V2+Nova Video",         fullName:"Spaced Repetition V2 – New Backend w/ Nova Video",              control:"SRT V2 Backend",        score:0.4794,
+    cancel:{var:39.22,ctrl:40.64,conf:84.88,days:28}, second_pay:{var:25.60,ctrl:25.31,conf:23.97,days:25}, d1_ret:{var:40.27,ctrl:39.87,conf:29.74,days:26} },
+  { rank:5,  exp:"course_v2/A2",           cohort:"All",       name:"SRT+Pre/Post",              fullName:"SRT – New Backend w/ Pre & Post Test",                          control:"Restructured+Pre/Post", score:0.4443,
+    cancel:{var:29.29,ctrl:29.21,conf:4.64,days:25},  second_pay:{var:36.90,ctrl:36.50,conf:21.15,days:23}, d1_ret:{var:41.09,ctrl:39.09,conf:82.36,days:23} },
+  { rank:6,  exp:"course_v2/A1",           cohort:"All",       name:"Restructured+Pre/Post",     fullName:"Restructured – w/ Pre & Post Test",                            control:"restructured",          score:0.2960,
+    cancel:{var:27.72,ctrl:27.64,conf:6.69,days:28},  second_pay:{var:36.73,ctrl:35.08,conf:86.86,days:25}, d1_ret:{var:41.86,ctrl:43.25,conf:79.25,days:26} },
+  { rank:7,  exp:"course_v2/A2/homemaker", cohort:"Homemaker", name:"SRT V2+Pre/Post (A2·HM)",  fullName:"SRT V2 – New Backend w/ Pre & Post Test",                      control:"SRT V2 Backend",        score:0.1762,
+    cancel:{var:22.39,ctrl:22.25,conf:5.93,days:44},  second_pay:{var:48.10,ctrl:47.32,conf:27.10,days:41}, d1_ret:{var:51.78,ctrl:50.74,conf:36.36,days:42} },
+  { rank:8,  exp:"course_v2/A1",           cohort:"All",       name:"Restructured Opt+Pre/Post", fullName:"Restructured – Optimized Order w/ Pre & Post Test",            control:"restructured",          score:-0.0132,
+    cancel:{var:28.36,ctrl:27.81,conf:33.81,days:21}, second_pay:{var:38.25,ctrl:37.62,conf:33.97,days:19}, d1_ret:{var:42.18,ctrl:42.67,conf:27.50,days:19} },
+  { rank:9,  exp:"course_v2/A0/homemaker", cohort:"Homemaker", name:"SRS Grammar (A0·HM)",      fullName:"SRS Grammar",                                                  control:"default",               score:-0.0521,
+    cancel:{var:21.47,ctrl:21.36,conf:5.92,days:46},  second_pay:{var:44.47,ctrl:44.91,conf:18.90,days:44}, d1_ret:{var:47.60,ctrl:47.99,conf:17.02,days:44} },
+  { rank:10, exp:"course_v2/A1",           cohort:"All",       name:"Conv First",                fullName:"SRT V2 – w/ Pre/Post + Conversation First Activity",           control:"SRT V2+Pre/Post",       score:-0.1277,
+    cancel:{var:25.58,ctrl:25.66,conf:3.83,days:13},  second_pay:{var:41.34,ctrl:42.25,conf:31.84,days:11}, d1_ret:{var:44.70,ctrl:45.06,conf:14.26,days:11} },
+  { rank:11, exp:"course_v2/A0/homemaker", cohort:"Homemaker", name:"SRT V2 Backend (A0·HM)",   fullName:"Spaced Repetition V2 – New Backend",                           control:"default",               score:-0.2103,
+    cancel:{var:20.83,ctrl:21.43,conf:32.02,days:42}, second_pay:{var:44.61,ctrl:44.66,conf:2.14,days:39},  d1_ret:{var:46.10,ctrl:47.80,conf:65.20,days:40} },
+  { rank:12, exp:"course_v2/A1/homemaker", cohort:"Homemaker", name:"SRT V2 Smaller Acts",      fullName:"Spaced Repetition V2 – New Backend w/ Smaller Activities",     control:"SRT V2 Backend",        score:-0.5873,
+    cancel:{var:21.94,ctrl:20.95,conf:44.45,days:35}, second_pay:{var:47.56,ctrl:46.56,conf:36.06,days:32}, d1_ret:{var:50.79,ctrl:53.60,conf:82.21,days:33} },
+  { rank:13, exp:"course_v2/hi/A1",        cohort:"Hindi",     name:"SRT V2+Pre/Post (Hi·A1)",  fullName:"Spaced Repetition V2 – New Backend w/ Pre & Post Test",        control:"SRT V2 Backend",        score:-1.0033,
+    cancel:{var:39.63,ctrl:38.02,conf:96.86,days:29}, second_pay:{var:25.71,ctrl:26.86,conf:87.54,days:28}, d1_ret:{var:40.98,ctrl:41.46,conf:45.68,days:27} },
+  { rank:14, exp:"course_v2/A2",           cohort:"All",       name:"SRT+Tests & Forms",         fullName:"SRT – w/ Tests and Forms",                                     control:"SRT+Pre/Post",          score:-1.2780,
+    cancel:{var:27.85,ctrl:28.86,conf:43.50,days:19}, second_pay:{var:36.82,ctrl:39.92,conf:86.79,days:17}, d1_ret:{var:39.80,ctrl:41.84,conf:69.72,days:17} },
+  { rank:15, exp:"course_v2/A1/homemaker", cohort:"Homemaker", name:"SRT V2+Pre/Post (A1·HM)",  fullName:"Spaced Repetition V2 – New Backend w/ Pre & Post Test",        control:"SRT V2 Backend",        score:-1.3265,
+    cancel:{var:22.54,ctrl:20.66,conf:83.02,days:42}, second_pay:{var:43.82,ctrl:46.07,conf:80.84,days:39}, d1_ret:{var:53.17,ctrl:53.85,conf:30.97,days:40} },
+  { rank:16, exp:"course_v2/hi/A2",        cohort:"Hindi",     name:"SRT V2+Pre/Post (Hi·A2)",  fullName:"Spaced Repetition V2 – New Backend w/ Pre & Post Test",        control:"SRT V2 Backend",        score:-2.0197,
+    cancel:{var:42.20,ctrl:40.76,conf:84.75,days:29}, second_pay:{var:22.32,ctrl:25.01,conf:99.62,days:27}, d1_ret:{var:37.75,ctrl:39.91,conf:96.41,days:27} },
+];
+
+const VERDICTS = {
+  1: "🚀 <b>Strong ship candidate.</b> 2nd pay +1.59pp at 96% confidence — clear signal. Dominant metric contributor. Cancel and D1 directionally positive but immature.",
+  2: "🚀 <b>Ship on D1 retention.</b> +1.45pp at 95.7% — primary signal. Cancel also directionally improved (−0.99pp, 86%). 2nd pay neutral. Broad positive quality signal.",
+  3: "📈 <b>Monitor → Ship.</b> Consistent directional gains across all three metrics — cancel, 2nd pay, D1. No single metric at 95%, but the composite strength is compelling. Needs ~10 more days.",
+  4: "📈 <b>Monitor.</b> Directional cancel improvement (−1.42pp, 85%) — strongest Hindi positive. 2nd pay and D1 are noise. Promising given Hindi cohort's historically poor cancel rates.",
+  5: "📈 <b>Monitor for D1.</b> D1 retention +2.0pp at 82% — most interesting signal here. Cancel and 2nd pay essentially neutral. Pure retention play — needs maturity.",
+  6: "⚠️ <b>Mixed — continue.</b> 2nd pay directionally up (+1.65pp, 87%) but D1 is directionally down (−1.39pp, 79%). These two signals oppose; net outcome uncertain. Don't ship yet.",
+  7: "🔵 <b>Continue.</b> All three metrics directionally positive but low confidence (≤36%). Homemaker baseline is high — signal needs more volume. Check back in 10 days.",
+  8: "🔵 <b>Continue.</b> Net neutral. Cancel slightly worse, 2nd pay slightly better — offsetting. All below 40% confidence. Too early for any conclusion.",
+  9: "🔵 <b>Continue.</b> All metrics slightly below control at low confidence. No signal yet. Long window (46d) suggests this cohort has low daily volume; effects are real but small.",
+  10: "⏳ <b>Too early (13d).</b> Payment directionally up but 2nd pay and D1 are below control. Very short window — immature. Revisit at 25+ days.",
+  11: "⚠️ <b>Watch D1.</b> Cancel improves directionally (+0.60pp, 32%) but D1 falls −1.7pp at 65% confidence. Retention regression building — monitor closely before extending.",
+  12: "🟠 <b>Lean kill.</b> D1 retention −2.81pp at 82% confidence — strong directional negative. Cancel worse too. 2nd pay is the only bright spot. Net outcome is clearly negative.",
+  13: "🔴 <b>Kill.</b> Cancel +1.61pp at 97% — confirmed harmful. 2nd pay −1.15pp at 87.5%. Classic Hindi quality trap pattern. Every metric points against the variant. Kill immediately.",
+  14: "🔴 <b>Kill.</b> 2nd pay −3.10pp at 87% + D1 −2.04pp at 70%. Both primary downstream metrics are hurting. Only cancel improves. The downstream destruction outweighs any funnel benefit.",
+  15: "🔴 <b>Kill — quality trap.</b> 2nd pay −2.25pp at 81% + cancel +1.88pp at 83%. Pre/post test in homemaker is attracting trial-curious users who cancel quickly and don't return. Kill.",
+  16: "🔴 <b>Immediate kill.</b> Most damaging variant in the portfolio. 2nd pay −2.69pp at 99.6%, D1 −2.16pp at 96.4%, cancel −1.44pp at 85%. All signals fire simultaneously. Kill now.",
+};
+
+let currentFilter = 'all';
+let selectedRank = null;
+
+function metricSign(metric, v) {
+  return metric === 'cancel' ? (v.ctrl - v.var) : (v.var - v.ctrl);
+}
+function grade(metric, m) {
+  const wins = metricSign(metric, m) > 0;
+  if (m.conf >= 95) return wins ? 'ship' : 'kill';
+  if (m.conf >= 80) return wins ? 'dir-up' : 'dir-dn';
+  return 'noise';
+}
+function gradeLabel(g) {
+  return {ship:'SHIP',kill:'KILL','dir-up':'DIR+','dir-dn':'DIR−',noise:'~'}[g];
+}
+function miniClass(g) {
+  if (g==='ship'||g==='dir-up') return 'mc-green';
+  if (g==='kill'||g==='dir-dn') return 'mc-red';
+  return 'mc-noise';
+}
+function barColor(g) {
+  if (g==='ship'||g==='dir-up') return 'var(--green)';
+  if (g==='kill'||g==='dir-dn') return 'var(--red)';
+  return 'var(--sub)';
+}
+function rankClass(r, score) {
+  if (r===1) return 'rank-1';
+  if (r===2) return 'rank-2';
+  if (r===3) return 'rank-3';
+  return score >= 0 ? 'rank-pos' : 'rank-neg';
+}
+function cohortClass(c) {
+  if (c==='All') return 'cohort-all';
+  if (c==='Homemaker') return 'cohort-hm';
+  return 'cohort-hi';
+}
+function cohortAbbr(c) {
+  if (c==='All') return 'All';
+  if (c==='Homemaker') return 'HM';
+  return 'Hi';
+}
+
+function filter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function render() {
+  const list = document.getElementById('rankList');
+  const filtered = currentFilter === 'all' ? DATA : DATA.filter(d => d.cohort === currentFilter);
+
+  // re-rank within filtered
+  let html = '';
+  let posZone = false, negZone = false;
+
+  filtered.forEach((d, i) => {
+    const localRank = i + 1;
+    if (!posZone && d.score >= 0) {
+      posZone = true;
+      html += `<div class="zone-header"><span class="zone-label pos">POSITIVE ZONE</span><div class="zone-divider"></div></div>`;
+    }
+    if (!negZone && d.score < 0) {
+      negZone = true;
+      html += `<div class="zone-header"><span class="zone-label neg">NEGATIVE ZONE</span><div class="zone-divider"></div></div>`;
+    }
+
+    const cg = grade('cancel', d.cancel);
+    const sg = grade('second_pay', d.second_pay);
+    const rg = grade('d1_ret', d.d1_ret);
+
+    const cDelta = -(d.cancel.var - d.cancel.ctrl);
+    const sDelta =   d.second_pay.var - d.second_pay.ctrl;
+    const rDelta =   d.d1_ret.var - d.d1_ret.ctrl;
+
+    const barPct = Math.min(100, Math.abs(d.score) / MAX_SCORE * 100);
+    const barColor2 = d.score >= 0 ? 'var(--green)' : 'var(--red)';
+
+    const isSelected = selectedRank === d.rank;
+
+    html += `<div class="rank-row${isSelected ? ' selected' : ''}" onclick="selectRow(${d.rank})" style="animation-delay:${i*0.03}s">
+      <div class="rank-num ${rankClass(localRank, d.score)}">${localRank}</div>
+      <div class="v-info">
+        <div class="v-name">${d.name}</div>
+        <div class="v-meta">
+          <span class="cohort-tag ${cohortClass(d.cohort)}">${cohortAbbr(d.cohort)}</span>
+          ${d.exp} · vs ${d.control}
+        </div>
+      </div>
+      <div class="score-col">
+        <div class="score-val ${d.score>=0?'score-pos':'score-neg'}">${d.score>=0?'+':''}${d.score.toFixed(3)}</div>
+        <div class="score-bar-wrap"><div class="score-bar" style="width:${barPct}%;background:${barColor2};"></div></div>
+      </div>
+      <div class="mini-metrics">
+        <div class="mini-cell ${miniClass(cg)}">
+          <span class="mini-label">Cancel</span>
+          <span class="mini-delta">${cDelta>=0?'+':''}${cDelta.toFixed(2)}</span>
+          <span class="mini-conf">${d.cancel.conf.toFixed(0)}%</span>
+        </div>
+        <div class="mini-cell ${miniClass(sg)}">
+          <span class="mini-label">2nd Pay</span>
+          <span class="mini-delta">${sDelta>=0?'+':''}${sDelta.toFixed(2)}</span>
+          <span class="mini-conf">${d.second_pay.conf.toFixed(0)}%</span>
+        </div>
+        <div class="mini-cell ${miniClass(rg)}">
+          <span class="mini-label">D1 Ret</span>
+          <span class="mini-delta">${rDelta>=0?'+':''}${rDelta.toFixed(2)}</span>
+          <span class="mini-conf">${d.d1_ret.conf.toFixed(0)}%</span>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  list.innerHTML = html;
+}
+
+function selectRow(rank) {
+  selectedRank = rank;
+  render();
+  const d = DATA.find(x => x.rank === rank);
+  renderDetail(d);
+}
+
+function renderDetail(d) {
+  const panel = document.getElementById('sidePanel');
+  const cg = grade('cancel', d.cancel);
+  const sg = grade('second_pay', d.second_pay);
+  const rg = grade('d1_ret', d.d1_ret);
+
+  function metricDetail(label, m, metric) {
+    const g = grade(metric, m);
+    const delta = metric === 'cancel' ? -(m.var-m.ctrl) : (m.var-m.ctrl);
+    const confPct = m.conf;
+    const confColor = g==='ship'||g==='dir-up' ? 'var(--green)' : g==='kill'||g==='dir-dn' ? 'var(--red)' : 'var(--sub)';
+    return `<div class="metric-detail">
+      <div class="md-header">
+        <span class="md-title">${label}</span>
+        <span class="md-badge ${g}">${gradeLabel(g)} ${g==='noise'?'NOISE':''}</span>
+      </div>
+      <div class="md-nums">
+        <div class="md-num-box"><div class="n-label">Experiment</div><div class="n-val" style="color:${delta>=0?'var(--green)':'var(--red)'}">${m.var.toFixed(2)}%</div></div>
+        <div class="md-num-box"><div class="n-label">Control</div><div class="n-val" style="color:var(--sub)">${m.ctrl.toFixed(2)}%</div></div>
+      </div>
+      <div class="md-conf-bar">
+        <div class="md-conf-label"><span>Δ ${delta>=0?'+':''}${delta.toFixed(2)}pp · ${m.days}d window</span><span>${confPct.toFixed(1)}% conf</span></div>
+        <div class="md-conf-track"><div class="md-conf-fill" style="width:${confPct}%;background:${confColor};"></div></div>
+      </div>
+    </div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="panel-title">Detail View</div>
+    <div class="detail-name">#${DATA.indexOf(d)+1} · ${d.name}</div>
+    <div class="detail-meta">${d.exp}<br/>vs ${d.control}<br/><span class="cohort-tag ${cohortClass(d.cohort)}" style="margin-left:0">${d.cohort}</span></div>
+
+    <div class="detail-score-box">
+      <div class="ds-row">
+        <span class="ds-label">Overall Score</span>
+        <span class="ds-val ${d.score>=0?'score-pos':'score-neg'}">${d.score>=0?'+':''}${d.score.toFixed(4)}</span>
+      </div>
+      <div class="ds-row">
+        <span class="ds-label">2nd Pay contrib</span>
+        <span class="ds-val" style="font-size:12px">${(((d.second_pay.var-d.second_pay.ctrl)*(d.second_pay.conf/100)*0.40)).toFixed(4)}</span>
+      </div>
+      <div class="ds-row">
+        <span class="ds-label">Cancel contrib</span>
+        <span class="ds-val" style="font-size:12px">${((-(d.cancel.var-d.cancel.ctrl))*(d.cancel.conf/100)*0.35).toFixed(4)}</span>
+      </div>
+      <div class="ds-row">
+        <span class="ds-label">D1 Ret contrib</span>
+        <span class="ds-val" style="font-size:12px">${(((d.d1_ret.var-d.d1_ret.ctrl)*(d.d1_ret.conf/100)*0.25)).toFixed(4)}</span>
+      </div>
+    </div>
+
+    ${metricDetail('Cancel 1-Day ↓', d.cancel, 'cancel')}
+    ${metricDetail('2nd Pay % ↑', d.second_pay, 'second_pay')}
+    ${metricDetail('D1 Retention ↑', d.d1_ret, 'd1_ret')}
+
+    <div class="verdict-box">${VERDICTS[d.rank]||'—'}</div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
